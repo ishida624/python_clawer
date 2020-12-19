@@ -33,7 +33,6 @@ def country(c):
     soup = BeautifulSoup(response.text, 'html.parser')
     country_name_html = soup.find_all("ul", class_="countries span3")
 
-    print(len(country_name_html))
     # 取出所有國家名稱與網址
     # 將國家名稱與網址用 dict (key-value) 儲存成 countries
     countries = {}
