@@ -16,6 +16,8 @@ def top(n):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     site_name = soup.find_all("div", class_="td DescriptionCell")
+    if n>len(site_name):
+        return 'please input less than 50'
     for i in range(n):
         print(site_name[i].p.a.text)
 
