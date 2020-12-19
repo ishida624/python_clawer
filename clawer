@@ -1,0 +1,61 @@
+#! /usr/bin/python
+# coding: utf-8
+import requests
+import fire
+from bs4 import BeautifulSoup
+
+
+def top(n):
+    """
+    Returns top sites of www.alexa.com
+    :param n: n sites
+    :return: show top n sites URL on www.alexa.com
+    """
+    # 發起請求
+    url = "https://www.alexa.com/topsites"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    site_name = soup.find_all("div", class_="td DescriptionCell")
+    for i in range(n):
+        print(site_name[i].p.a.text)
+
+
+def country(c):
+    """
+    Returns top 20 sites URL of nwww.alexa.com by country
+    :param c: country name
+    :return: show top 20 sites URL of nwww.alexa.com by country
+    """
+    url = "https://www.alexa.com/topsites/countries"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    country_name_html = soup.find_all("ul", class_="countries span3")
+
+    print(len(country_name_html))
+    # 取出所有國家名稱與網址
+    # 將國家名稱與網址用 dict (key-value) 儲存成 countries
+    countries = {}
+    for i in range(len(country_name_html)):
+        for name in country_name_html[i].find_all("li"):
+            country_name = name.a.text
+            top_sites_depends_on_country_url = url + \
+                "/" + name.a["href"].split("/")[1]
+            countries[country_name] = top_sites_depends_on_country_url
+    sites_num = 20
+    if c in countries:
+        # 發起請求
+        url = countries[c]
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        site_name = soup.find_all("div", class_="td DescriptionCell")
+        for i in range(sites_num):
+            print(site_name[i].p.a.text)
+    else:
+        print("Wrong Input. Please input correctly.")
+
+
+if __name__ == "__main__":
+    fire.Fire({
+        "top": top,
+        "country": country
+    })
